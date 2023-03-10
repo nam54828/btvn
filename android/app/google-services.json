@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "858059890858",
+    "project_id": "crud-firebase-ktraso1",
+    "storage_bucket": "crud-firebase-ktraso1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858059890858:android:7cfd1008f29ff404dff0d3",
+        "android_client_info": {
+          "package_name": "com.example.doducnam_54828_st20a2a_baikiemtraso1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "858059890858-cns6eoeojpjh8hv5immcr7pindm2h1ir.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvNFLVg_deRfLyh_FloCfTTurA4nUucb8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "858059890858-cns6eoeojpjh8hv5immcr7pindm2h1ir.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
