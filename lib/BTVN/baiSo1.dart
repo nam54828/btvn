@@ -11,25 +11,24 @@ class baiSo1 extends StatefulWidget {
 
 class _baiSo1State extends State<baiSo1> {
   // text fields' controllers
-  final TextEditingController _masvController = TextEditingController();
-  final TextEditingController _ngaysinhController = TextEditingController();
-  final TextEditingController _gioitinhController = TextEditingController();
-  final TextEditingController _quequanController = TextEditingController();
-
-  final CollectionReference _sinhvien =
-  FirebaseFirestore.instance.collection('sinhvien');
+  final TextEditingController maSinhVienController = TextEditingController();
+  final TextEditingController ngaySinhController = TextEditingController();
+  final TextEditingController gioiTinhController = TextEditingController();
+  final TextEditingController queQuanController = TextEditingController();
+  final CollectionReference _sinhVien =
+  FirebaseFirestore.instance.collection('sinhVien');
 
   // This function is triggered when the floatting button or one of the edit buttons is pressed
-  // Adding a product if no documentSnapshot is passed
+  // Adding a sinhVien if no documentSnapshot is passed
   // If documentSnapshot != null then update an existing product
   Future<void> _createOrUpdate([DocumentSnapshot? documentSnapshot]) async {
     String action = 'create';
     if (documentSnapshot != null) {
       action = 'update';
-      _masvController.text = documentSnapshot['masv'];
-      _ngaysinhController.text = documentSnapshot['ngaysinh'].toString();
-      _gioitinhController.text = documentSnapshot['masv'];
-      _quequanController.text = documentSnapshot['quequan'];
+      maSinhVienController.text = documentSnapshot['maSinhVien'].toString();
+      ngaySinhController.text = documentSnapshot['ngaySinh'];
+      gioiTinhController.text = documentSnapshot['gioiTinh'].toString();
+      queQuanController.text = documentSnapshot['queQuan'].toString();
     }
 
     await showModalBottomSheet(
@@ -48,24 +47,32 @@ class _baiSo1State extends State<baiSo1> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextField(
-                  controller: _masvController,
-                  decoration: const InputDecoration(labelText: 'Masv'),
+                  keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+                  controller: maSinhVienController,
+                  decoration: const InputDecoration(
+                    labelText: 'Mã Sinh Viên',
+                  ),
+                ),
+                TextField(
+                  controller: ngaySinhController,
+                  decoration: const InputDecoration(labelText: 'Ngày Sinh'),
                 ),
                 TextField(
                   keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
-                  controller: _ngaysinhController,
+                  controller: gioiTinhController,
                   decoration: const InputDecoration(
-                    labelText: 'Ngaysinh',
+                    labelText: 'Giới Tính',
                   ),
                 ),
                 TextField(
-                  controller: _gioitinhController,
-                  decoration: const InputDecoration(labelText: 'gioi tinh'),
-                ),
-                TextField(
-                  controller: _quequanController,
-                  decoration: const InputDecoration(labelText: 'que quan'),
+                  keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+                  controller: queQuanController,
+                  decoration: const InputDecoration(
+                    labelText: 'Quê quán',
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
@@ -73,41 +80,28 @@ class _baiSo1State extends State<baiSo1> {
                 ElevatedButton(
                   child: Text(action == 'create' ? 'Create' : 'Update'),
                   onPressed: () async {
-                    final String? masv = _masvController.text;
-                    final String? gioitinh = _gioitinhController.text;
-                    final String? quequan = _quequanController.text;
-                    final double? ngaysinh =
-                    double.tryParse(_ngaysinhController.text);
-                    if (masv != null &&
-                        gioitinh != null &&
-                        quequan != null &&
-                        ngaysinh != null) {
+                    final String? maSinhVien = maSinhVienController.text;
+                    final String? ngaySinh = ngaySinhController.text;
+                    final String? gioiTinh = gioiTinhController.text;
+                    final String? queQuan = queQuanController.text;
+                    if (maSinhVien != null && ngaySinh != null && gioiTinh != null && queQuan != null) {
                       if (action == 'create') {
-                        // Persist a new product to Firestore
-                        await _sinhvien.add({
-                          "masv": masv,
-                          "gioitinh": gioitinh,
-                          "ngaysinh": ngaysinh,
-                          "quequan": quequan
-                        });
+                        // Persist a new giangVien to Firestore
+                        await _sinhVien.add({"maSinhVien": maSinhVien, "ngaySinh": ngaySinh, "gioiTinh": gioiTinh, "queQuan": queQuan});
                       }
 
                       if (action == 'update') {
-                        // Update the product
-                        await _sinhvien.doc(documentSnapshot!.id).update({
-                          "masv": masv,
-                          "gioitinh": gioitinh,
-                          "ngaysinh": ngaysinh,
-                          "quequan": quequan
-                        });
+                        // Update the giangVien
+                        await _sinhVien
+                            .doc(documentSnapshot!.id)
+                            .update({"maSinhVien": maSinhVien, "ngaySinh": ngaySinh, "gioiTinh": gioiTinh, "queQuan": queQuan});
                       }
 
                       // Clear the text fields
-                      _masvController.text = '';
-                      _ngaysinhController.text = '';
-                      _gioitinhController.text = '';
-                      _quequanController.text = '';
-
+                      maSinhVienController.text = '';
+                      ngaySinhController.text = '';
+                      gioiTinhController.text = '';
+                      queQuanController.text = '';
                       // Hide the bottom sheet
                       Navigator.of(context).pop();
                     }
@@ -119,23 +113,25 @@ class _baiSo1State extends State<baiSo1> {
         });
   }
 
-  Future<void> _deleteProduct(String sinhvienId) async {
-    await _sinhvien.doc(sinhvienId).delete();
+  // Deleteing a sinhvien by id
+  Future<void> _deleteProduct(String sinhVienId) async {
+    await _sinhVien.doc(sinhVienId).delete();
 
     // Show a snackbar
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You have successfully deleted a class')));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('You have successfully deleted a class')));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('crud.com'),
+        //leading: IconButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => de1())), icon: Icon(Icons.arrow_back, color: Colors.black,)),
+        title: const Text('Bài tập về nhà- 01'),
       ),
       // Using StreamBuilder to display all products from Firestore in real-time
       body: StreamBuilder(
-        stream: _sinhvien.snapshots(),
+        stream: _sinhVien.snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
           if (streamSnapshot.hasData) {
             return ListView.builder(
@@ -147,32 +143,72 @@ class _baiSo1State extends State<baiSo1> {
                 return Card(
                   margin: const EdgeInsets.all(10),
                   child: ListTile(
-                    title: Container(
+                    title: Text(documentSnapshot['maSinhVien'] , style: TextStyle(
+                        fontWeight: FontWeight.bold
+                    ),),
+                    subtitle: Expanded(
                       child: Column(
                         children: [
-                          Text(documentSnapshot['masv']),
-                          Text(documentSnapshot['gioitinh']),
-                          Text(documentSnapshot['ngaysinh'].toString()),
-                          Text(documentSnapshot['quequan']),
+                          Row(
+                            children: [
+                              Column(
+                                children: [
+                                  Text("Ngày sinh: ")
+                                ],
+                              )  ,
+                              Column(
+                                children: [
+                                  Text(documentSnapshot['ngaySinh'].toString()),
+                                ],
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Column(
+                                children: [
+                                  Text("Giới tính: ")
+                                ],
+                              )  ,
+                              Column(
+                                children: [
+                                  Text(documentSnapshot['gioiTinh'].toString()),
+                                ],
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Column(
+                                children: [
+                                  Text("Quê quán: ")
+                                ],
+                              )  ,
+                              Column(
+                                children: [
+                                  Text(documentSnapshot['queQuan'].toString()),
+                                ],
+                              )
+                            ],
+                          ),
                         ],
                       ),
                     ),
-                    // subtitle: Text(documentSnapshot['ngaysinh'].toString()),
                     trailing: SizedBox(
                       width: 100,
                       child: Row(
                         children: [
                           // Press this button to edit a single product
                           IconButton(
-                              icon: const Icon(Icons.edit),
+                              icon: const Icon(Icons.edit_outlined),
                               onPressed: () =>
                                   _createOrUpdate(documentSnapshot)),
+                          // This icon button is used to delete a single product
                           IconButton(
                               icon: const Icon(Icons.delete_outline),
                               onPressed: () =>
                                   _deleteProduct(documentSnapshot.id)),
                         ],
-                        // This icon button is used to delete a single product
                       ),
                     ),
                   ),
